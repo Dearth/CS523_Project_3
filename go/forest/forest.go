@@ -20,7 +20,7 @@ var MAX_GENERATIONS int
 var MAX_CA_LIFETIME int
 
 const CA_SIZE = 250
-const FOREST_SIZE = 1
+const FOREST_SIZE = 3
 
 const (
 	DEAD = iota
@@ -47,17 +47,16 @@ func (f *Forest) UpdateCell(x, y int, next_step *[CA_SIZE][CA_SIZE]int) {
 	var x_plus, x_minus, y_plus, y_minus int
 
 	t := f.trees_[x][y];
-	fmt.Println(x, y)
-	fmt.Println(t)
 
 	switch t {
 		case FIRE:
 			next_step[x][y] = DEAD
 			break
 		case DEAD:
-			if f.random_.Intn(100) <= f.spawn_rate_one_ {
+			spawn := f.random_.Intn(100)
+			if spawn <= f.spawn_rate_one_ {
 				next_step[x][y] = ALIVE_ONE
-			} else if f.random_.Intn(100) <= (f.spawn_rate_one_ + f.spawn_rate_two_) {
+			} else if spawn <= (f.spawn_rate_one_ + f.spawn_rate_two_) {
 				next_step[x][y] = ALIVE_TWO
 			} else {
 				next_step[x][y] = DEAD
@@ -90,7 +89,6 @@ func (f *Forest) UpdateCell(x, y int, next_step *[CA_SIZE][CA_SIZE]int) {
 				} else {
 					y_minus = y - 1
 				}
-				fmt.Println(x_plus, x_minus, y_plus, y_minus)
 
 				switch {
 					case f.trees_[x_plus][y_plus] == FIRE:
