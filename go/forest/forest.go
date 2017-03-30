@@ -67,26 +67,26 @@ func (f *Forest) UpdateCell(x, y int, next_step *[CA_SIZE][CA_SIZE]int) {
 			if f.random_.Intn(1000) == f.lightning_rate_ {
 				next_step[x][y] = FIRE
 			} else {
-				if x == (FOREST_SIZE-1) {
+				if x == (CA_SIZE-1) {
 					x_plus = 0
 				} else {
 					x_plus = x + 1
 				}
 
 				if x == 0 {
-					x_minus = FOREST_SIZE - 1
+					x_minus = CA_SIZE - 1
 				} else {
 					x_minus = x - 1
 				}
 
-				if y == (FOREST_SIZE-1) {
+				if y == (CA_SIZE-1) {
 					y_plus = 0
 				} else {
 					y_plus = y + 1
 				}
 
 				if y == 0 {
-					y_minus = FOREST_SIZE - 1
+					y_minus = CA_SIZE - 1
 				} else {
 					y_minus = y - 1
 				}
@@ -112,26 +112,26 @@ func (f *Forest) UpdateCell(x, y int, next_step *[CA_SIZE][CA_SIZE]int) {
 			if f.random_.Intn(1000) == f.lightning_rate_ {
 				next_step[x][y] = FIRE
 			} else {
-				if x == (FOREST_SIZE-1) {
+				if x == (CA_SIZE-1) {
 					x_plus = 0
 				} else {
 					x_plus = x + 1
 				}
 
 				if x == 0 {
-					x_minus = FOREST_SIZE - 1
+					x_minus = CA_SIZE - 1
 				} else {
 					x_minus = x - 1
 				}
 
-				if y == (FOREST_SIZE-1) {
+				if y == (CA_SIZE-1) {
 					y_plus = 0
 				} else {
 					y_plus = y + 1
 				}
 
 				if y == 0 {
-					y_minus = FOREST_SIZE - 1
+					y_minus = CA_SIZE - 1
 				} else {
 					y_minus = y - 1
 				}
