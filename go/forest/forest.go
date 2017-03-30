@@ -20,7 +20,7 @@ var MAX_GENERATIONS int
 var MAX_CA_LIFETIME int
 
 const CA_SIZE = 250
-const FOREST_SIZE = 3
+const FOREST_SIZE = 20
 
 const (
 	DEAD = iota
@@ -336,13 +336,13 @@ func (f *ForestGA) FitnessLongevity() {
 
 }
 
-func (f *ForestGA) Run() {
+func (f *ForestGA) Run(fit, mut, ff) {
 	FITNESS = 1
 	MUTATE = 1
 	FIRE_FIGHTERS = 0
 
-	MAX_GENERATIONS = 10
-	MAX_CA_LIFETIME = 3
+	MAX_GENERATIONS = 100
+	MAX_CA_LIFETIME = 5000
 
 	fout, err := os.Create("output.csv")
 	if err != nil {
@@ -353,8 +353,6 @@ func (f *ForestGA) Run() {
 	w := bufio.NewWriter(fout)
 
 	for steps := 0; steps < MAX_GENERATIONS; steps++ {
-		fmt.Println("Starting generation", steps)
-		fmt.Println("Calc Fitness")
 		if FITNESS == 1 {
 			f.FitnessBiomass()
 		} else {
@@ -363,19 +361,14 @@ func (f *ForestGA) Run() {
 
 		sort.Sort(ByFitness(f.forests_))
 
-		fmt.Println("Mutating Spawn Rates")
 		for i := 0; i < FOREST_SIZE-1; i++ {
 			if MUTATE == 1 {
 				f.forests_[i].MutateSingleSpecies()
 			} else {
 				f.forests_[i].MutateTwoSpecies()
 			}
-			fmt.Println("Forest", i)
-			fmt.Println("Species 1 spawn rate:", f.forests_[i].forest_.spawn_rate_one_)
-			fmt.Println("Species 2 spawn rate:", f.forests_[i].forest_.spawn_rate_two_)
 		}
 
-		fmt.Println("Recording Fitness")
 		for i := 0; i < FOREST_SIZE; i++ {
 			_, err = fmt.Fprintf(w, "%f,", f.forests_[i].fitness_)
 			if err != nil {
