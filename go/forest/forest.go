@@ -54,9 +54,9 @@ func (f *Forest) UpdateCell(x, y int, next_step *[CA_SIZE][CA_SIZE]int) {
 			break
 		case DEAD:
 			spawn := f.random_.Intn(100)
-			if spawn <= f.spawn_rate_one_ {
+			if spawn < f.spawn_rate_one_ {
 				next_step[x][y] = ALIVE_ONE
-			} else if spawn <= (f.spawn_rate_one_ + f.spawn_rate_two_) {
+			} else if spawn < (f.spawn_rate_one_ + f.spawn_rate_two_) {
 				next_step[x][y] = ALIVE_TWO
 			} else {
 				next_step[x][y] = DEAD
@@ -232,7 +232,7 @@ func (f *Forest) AllDead() bool {
 	return true
 }
 
-type ByFitness [FOREST_SIZE]MutatingForest
+type ByFitness []MutatingForest
 
 func (a ByFitness) Len() int {
 	return len(a)
@@ -269,11 +269,13 @@ func (m *MutatingForest) MutateTwoSpecies() {
 }
 
 type ForestGA struct {
-	forests_ [FOREST_SIZE]MutatingForest
+	forests_ []MutatingForest
 }
 
 func NewForestGA() ForestGA {
 	var g ForestGA
+	g.forests_ = make([]MutatingForest, FOREST_SIZE)
+
 	for i := 0; i < FOREST_SIZE; i++ {
 		g.forests_[i] = NewMutForest()
 	}
@@ -334,10 +336,6 @@ func (f *ForestGA) FitnessLongevity() {
 
 }
 
-func (f *ForestGA) Sort() {
-	sort.Sort(ByFitness(f.forests_))
-}
-
 func (f *ForestGA) Run() {
 	FITNESS = 1
 	MUTATE = 1
@@ -363,7 +361,7 @@ func (f *ForestGA) Run() {
 			f.FitnessLongevity()
 		}
 
-		f.Sort()
+		sort.Sort(ByFitness(f.forests_))
 
 		fmt.Println("Mutating Spawn Rates")
 		for i := 0; i < FOREST_SIZE-1; i++ {
