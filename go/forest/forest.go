@@ -326,11 +326,11 @@ func (f *ForestGA) FitnessLongevity() {
 			defer wg.Done()
 
 			for steps := 0; steps < MAX_CA_LIFETIME; steps++ {
+				mf.forest_.Update()
 				if mf.forest_.AllDead() {
 					mf.fitness_ = float64(steps)
 					return
 				}
-				mf.forest_.Update()
 			}
 
 			mf.fitness_ = float64(MAX_CA_LIFETIME)
