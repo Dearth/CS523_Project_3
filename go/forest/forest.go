@@ -40,7 +40,7 @@ type Forest struct {
 
 
 func NewForest() Forest {
-	return Forest{lightning_rate_: 1, fire_fighters_: FIRE_FIGHTERS, random_: rand.New(rand.NewSource(time.Now().UTC().UnixNano()))}
+	return Forest{lightning_rate_: 1, random_: rand.New(rand.NewSource(time.Now().UTC().UnixNano()))}
 }
 
 func (f *Forest) UpdateCell(x, y int, next_step *[CA_SIZE][CA_SIZE]int) {
@@ -64,7 +64,12 @@ func (f *Forest) UpdateCell(x, y int, next_step *[CA_SIZE][CA_SIZE]int) {
 			break
 		case ALIVE_ONE:
 			if f.random_.Intn(1000) == f.lightning_rate_ {
-				next_step[x][y] = FIRE
+				if f.fire_fighters_ < FIRE_FIGHTERS {
+					next_step[x][y] = ALIVE_ONE
+					f.fire_fighters_++
+				} else {
+					next_step[x][y] = FIRE
+				}
 			} else {
 				if x == (CA_SIZE-1) {
 					x_plus = 0
@@ -108,14 +113,13 @@ func (f *Forest) UpdateCell(x, y int, next_step *[CA_SIZE][CA_SIZE]int) {
 			break
 		case ALIVE_TWO:
 			if f.random_.Intn(1000) == f.lightning_rate_ {
-				next_step[x][y] = FIRE
-			} else {
-				if x == (CA_SIZE-1) {
-					x_plus = 0
+				if f.fire_fighters_ < FIRE_FIGHTERS {
+					next_step[x][y] = ALIVE_ONE
+					f.fire_fighters_++
 				} else {
-					x_plus = x + 1
+					next_step[x][y] = FIRE
 				}
-
+			} else {
 				if x == 0 {
 					x_minus = CA_SIZE - 1
 				} else {
@@ -157,6 +161,7 @@ func (f *Forest) UpdateCell(x, y int, next_step *[CA_SIZE][CA_SIZE]int) {
 
 func (f *Forest) Update() {
 	var next_step [CA_SIZE][CA_SIZE]int
+	f.fire_fighters_ = 0
 	for x := 0; x < CA_SIZE; x++ {
 		for y := 0; y < CA_SIZE; y++ {
 			f.UpdateCell(x, y, &next_step)
@@ -336,10 +341,10 @@ func (f *ForestGA) FitnessLongevity() {
 
 }
 
-func (f *ForestGA) Run(fit, mut, ff) {
-	FITNESS = 1
-	MUTATE = 1
-	FIRE_FIGHTERS = 0
+func (f *ForestGA) Run(fit, mut, ff int) {
+	FITNESS = fit
+	MUTATE = mut
+	FIRE_FIGHTERS = ff
 
 	MAX_GENERATIONS = 100
 	MAX_CA_LIFETIME = 5000
