@@ -11,6 +11,8 @@ func main() {
 	mutPtr := flag.Int("mut", 1, "Number of species to mutate, max = 2")
 	ffPtr := flag.Int("ff", 0, "Number of firefighters used")
 
+	flag.Parse()
+
 	forests := forest.NewForestGA()
 
 	forests.Run(*fitPtr, *mutPtr, *ffPtr)
