@@ -2,10 +2,12 @@ from enum import Enum
 
 
 class Forest(list):
-    def __init__(self, rows=50, cols=50):
+    def __init__(self, rows=50, cols=50, spawn_rate_one=30, spawn_rate_two=0):
         super().__init__(Cell(i) for i in range(rows * cols))
         self.rows = rows
         self.cols = cols
+		self.spawn_rate_one
+		self.spawn_rate_two
 
     def index_2d(self, i):
         return i // self.cols, i % self.cols
@@ -30,6 +32,8 @@ class Forest(list):
     def is_dead(self):
         return not any(map(Cell.is_alive, self))
 
+	def biomass(self):
+		return len(map(Cell.is_alive, self))/(rows*cols)
 
 class Cell:
     def __init__(self, i):
