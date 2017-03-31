@@ -19,7 +19,7 @@ var FIRE_FIGHTERS int
 var MAX_GENERATIONS int
 var MAX_CA_LIFETIME int
 
-const CA_SIZE = 250
+const CA_SIZE = 50
 const FOREST_SIZE = 20
 
 const (
@@ -97,12 +97,26 @@ func (f *Forest) UpdateCell(x, y int, next_step *[CA_SIZE][CA_SIZE]int) {
 
 				switch {
 					case f.trees_[x_plus][y_plus] == FIRE:
+						next_step[x][y] = FIRE
+						break
 					case f.trees_[x_plus][y] == FIRE:
+						next_step[x][y] = FIRE
+						break
 					case f.trees_[x_plus][y_minus] == FIRE:
+						next_step[x][y] = FIRE
+						break
 					case f.trees_[x][y_plus] == FIRE:
+						next_step[x][y] = FIRE
+						break
 					case f.trees_[x][y_minus] == FIRE:
+						next_step[x][y] = FIRE
+						break
 					case f.trees_[x_minus][y_plus] == FIRE:
+						next_step[x][y] = FIRE
+						break
 					case f.trees_[x_minus][y] == FIRE:
+						next_step[x][y] = FIRE
+						break
 					case f.trees_[x_minus][y_minus] == FIRE:
 						next_step[x][y] = FIRE
 						break
@@ -135,12 +149,26 @@ func (f *Forest) UpdateCell(x, y int, next_step *[CA_SIZE][CA_SIZE]int) {
 
 				switch {
 					case f.trees_[x_plus][y_plus] == FIRE:
+						next_step[x][y] = FIRE
+						break
 					case f.trees_[x_plus][y] == FIRE:
+						next_step[x][y] = FIRE
+						break
 					case f.trees_[x_plus][y_minus] == FIRE:
+						next_step[x][y] = FIRE
+						break
 					case f.trees_[x][y_plus] == FIRE:
+						next_step[x][y] = FIRE
+						break
 					case f.trees_[x][y_minus] == FIRE:
+						next_step[x][y] = FIRE
+						break
 					case f.trees_[x_minus][y_plus] == FIRE:
+						next_step[x][y] = FIRE
+						break
 					case f.trees_[x_minus][y] == FIRE:
+						next_step[x][y] = FIRE
+						break
 					case f.trees_[x_minus][y_minus] == FIRE:
 						next_step[x][y] = FIRE
 						break
@@ -198,6 +226,7 @@ func (f *Forest) WriteForest(w io.Writer) (n int, err error) {
 				return
 			}
 		}
+		io.WriteString(w, "\n")
 	}
 	return
 }
