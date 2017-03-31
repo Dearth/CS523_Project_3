@@ -39,8 +39,8 @@ type Forest struct {
 }
 
 
-func NewForest() Forest {
-	return Forest{lightning_rate_: 1, random_: rand.New(rand.NewSource(time.Now().UTC().UnixNano()))}
+func NewForest(spawn, spawn2, ff int) Forest {
+	return Forest{spawn_rate_one_: spawn, spawn_rate_two_: spawn2, fire_fighters_: ff, lightning_rate_: 1, random_: rand.New(rand.NewSource(time.Now().UTC().UnixNano()))}
 }
 
 func (f *Forest) UpdateCell(x, y int, next_step *[CA_SIZE][CA_SIZE]int) {
@@ -50,7 +50,12 @@ func (f *Forest) UpdateCell(x, y int, next_step *[CA_SIZE][CA_SIZE]int) {
 
 	switch t {
 		case FIRE:
-			next_step[x][y] = DEAD
+			if f.random_.Intn(100) < 50 && f.fire_fighters_ != FIRE_FIGHTERS {
+				next_step[x][y] = ALIVE_ONE
+				f.fire_fighters_++
+			} else {
+				next_step[x][y] = DEAD
+			}
 			break
 		case DEAD:
 			spawn := f.random_.Intn(100)
@@ -64,12 +69,7 @@ func (f *Forest) UpdateCell(x, y int, next_step *[CA_SIZE][CA_SIZE]int) {
 			break
 		case ALIVE_ONE:
 			if f.random_.Intn(1000) == f.lightning_rate_ {
-				if f.fire_fighters_ < FIRE_FIGHTERS {
-					next_step[x][y] = ALIVE_ONE
-					f.fire_fighters_++
-				} else {
-					next_step[x][y] = FIRE
-				}
+				next_step[x][y] = FIRE
 			} else {
 				if x == (CA_SIZE-1) {
 					x_plus = 0
@@ -113,12 +113,7 @@ func (f *Forest) UpdateCell(x, y int, next_step *[CA_SIZE][CA_SIZE]int) {
 			break
 		case ALIVE_TWO:
 			if f.random_.Intn(1000) == f.lightning_rate_ {
-				if f.fire_fighters_ < FIRE_FIGHTERS {
-					next_step[x][y] = ALIVE_ONE
-					f.fire_fighters_++
-				} else {
-					next_step[x][y] = FIRE
-				}
+				next_step[x][y] = FIRE
 			} else {
 				if x == 0 {
 					x_minus = CA_SIZE - 1
@@ -257,8 +252,8 @@ type MutatingForest struct {
 	rand_ *rand.Rand
 }
 
-func NewMutForest() (mf MutatingForest) {
-	mf.forest_ = NewForest()
+func NewMutForest(spawn, spawn2, ff int) (mf MutatingForest) {
+	mf.forest_ = NewForest(spawn, spawn2, ff)
 	mf.rand_ = rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
 
 	return
@@ -277,12 +272,12 @@ type ForestGA struct {
 	forests_ []MutatingForest
 }
 
-func NewForestGA() ForestGA {
+func NewForestGA(spawn, spawn2, ff int) ForestGA {
 	var g ForestGA
 	g.forests_ = make([]MutatingForest, FOREST_SIZE)
 
 	for i := 0; i < FOREST_SIZE; i++ {
-		g.forests_[i] = NewMutForest()
+		g.forests_[i] = NewMutForest(spawn, spawn2, ff)
 	}
 
 	return g
@@ -354,7 +349,6 @@ func (f *ForestGA) Run(fit, mut, ff int) {
 		panic(err)
 	}
 	defer fout.Close()
-
 	w := bufio.NewWriter(fout)
 
 	for steps := 0; steps < MAX_GENERATIONS; steps++ {
@@ -366,7 +360,7 @@ func (f *ForestGA) Run(fit, mut, ff int) {
 
 		sort.Sort(ByFitness(f.forests_))
 
-		for i := 0; i < FOREST_SIZE-1; i++ {
+		for i := 0; i < FOREST_SIZE-20; i++ {
 			if MUTATE == 1 {
 				f.forests_[i].MutateSingleSpecies()
 			} else {
@@ -388,9 +382,169 @@ func (f *ForestGA) Run(fit, mut, ff int) {
 		}
 	}
 
-	fmt.Println("Species 1 spawn rate:", f.forests_[FOREST_SIZE-1].forest_.spawn_rate_one_)
-	fmt.Println("Species 2 spawn rate:", f.forests_[FOREST_SIZE-1].forest_.spawn_rate_two_)
-	fmt.Println("Number of fire fighters:", f.forests_[FOREST_SIZE-1].forest_.fire_fighters_)
+	for i := FOREST_SIZE-1 ; i > 20; i-- {
+		fmt.Println(f.forests_[i].fitness_)
+	}
 }
+
+func (f *ForestGA) RunProbTest() {
+	FITNESS = 1
+	MUTATE = 1
+	FIRE_FIGHTERS = 0
+
+	MAX_GENERATIONS = 100
+	MAX_CA_LIFETIME = 5000
+
+	fbio, err := os.Create("prob_biomass_fitness")
+	if err != nil {
+		panic(err)
+	}
+	defer fbio.Close()
+	fbw := bufio.NewWriter(fbio)
+
+	flong, err := os.Create("prob_longevity_fitness")
+	if err != nil {
+		panic(err)
+	}
+	defer flong.Close()
+	flw := bufio.NewWriter(flong)
+
+	for prob := 0; prob <= 100; prob += 5 {
+
+		for i := 0; i < FOREST_SIZE; i++ {
+			f.forests_[i].forest_.spawn_rate_one_ = prob
+		}
+
+		f.FitnessBiomass()
+
+		for i := 0; i < FOREST_SIZE; i++ {
+			_, err = fmt.Fprintf(fbw, "%f,", f.forests_[i].fitness_)
+			if err != nil {
+				panic(err)
+			}
+		}
+
+		fmt.Fprintf(fbw, "\n")
+		err = fbw.Flush()
+		if err != nil {
+			panic(err)
+		}
+
+		f.FitnessLongevity()
+
+		for i := 0; i < FOREST_SIZE; i++ {
+			_, err = fmt.Fprintf(flw, "%f,", f.forests_[i].fitness_)
+			if err != nil {
+				panic(err)
+			}
+		}
+
+		fmt.Fprintf(flw, "\n")
+		err = flw.Flush()
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
+func (f *ForestGA) RunFFTest() {
+	FITNESS = 1
+	MUTATE = 1
+	FIRE_FIGHTERS = 0
+
+	MAX_GENERATIONS = 100
+	MAX_CA_LIFETIME = 5000
+
+	fbio, err := os.Create("ff_biomass_fitness")
+	if err != nil {
+		panic(err)
+	}
+	defer fbio.Close()
+	fbw := bufio.NewWriter(fbio)
+
+	flong, err := os.Create("ff_longevity_fitness")
+	if err != nil {
+		panic(err)
+	}
+	defer flong.Close()
+	flw := bufio.NewWriter(flong)
+
+	for ff := 0; ff <= 1000; ff += 50 {
+
+		for i := 0; i < FOREST_SIZE; i++ {
+			f.forests_[i].forest_.fire_fighters_ = ff
+		}
+
+		f.FitnessBiomass()
+
+		for i := 0; i < FOREST_SIZE; i++ {
+			_, err = fmt.Fprintf(fbw, "%f,", f.forests_[i].fitness_)
+			if err != nil {
+				panic(err)
+			}
+		}
+
+		fmt.Fprintf(fbw, "\n")
+		err = fbw.Flush()
+		if err != nil {
+			panic(err)
+		}
+
+		f.FitnessLongevity()
+
+		for i := 0; i < FOREST_SIZE; i++ {
+			_, err = fmt.Fprintf(flw, "%f,", f.forests_[i].fitness_)
+			if err != nil {
+				panic(err)
+			}
+		}
+
+		fmt.Fprintf(flw, "\n")
+		err = flw.Flush()
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
