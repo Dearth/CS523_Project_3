@@ -13,7 +13,7 @@ func main() {
 
 	flag.Parse()
 
-	forests := forest.NewForestGA()
+	forests := forest.NewForestGA(0, 0, 0)
 
 	forests.Run(*fitPtr, *mutPtr, *ffPtr)
 
