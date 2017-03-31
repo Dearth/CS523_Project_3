@@ -19,8 +19,8 @@ var FIRE_FIGHTERS int
 var MAX_GENERATIONS int
 var MAX_CA_LIFETIME int
 
-const CA_SIZE = 50
-const FOREST_SIZE = 20
+const CA_SIZE = 250
+const FOREST_SIZE = 40
 
 const (
 	DEAD = iota
@@ -396,7 +396,7 @@ func (f *ForestGA) Run(fit, mut, ff int) {
 
 		sort.Sort(ByFitness(f.forests_))
 
-		for i := 0; i < FOREST_SIZE-20; i++ {
+		for i := 0; i < FOREST_SIZE-1; i++ {
 			if MUTATE == 1 {
 				f.forests_[i].MutateSingleSpecies()
 			} else {
@@ -445,7 +445,7 @@ func (f *ForestGA) RunProbTest() {
 	defer flong.Close()
 	flw := bufio.NewWriter(flong)
 
-	for prob := 0; prob <= 100; prob += 5 {
+	for prob := 0; prob <= 100; prob++ {
 
 		for i := 0; i < FOREST_SIZE; i++ {
 			f.forests_[i].forest_.spawn_rate_one_ = prob
