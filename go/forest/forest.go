@@ -36,6 +36,7 @@ type Forest struct {
 	lightning_rate_ int
 	fire_fighters_ int
 	random_ *rand.Rand
+	time_step int
 }
 
 
@@ -78,7 +79,7 @@ func (f *Forest) UpdateCell(x, y int, next_step *[CA_SIZE][CA_SIZE]int) {
 				}
 
 				if x == 0 {
-					x_minus = CA_SIZE - 1
+					x_minus = CA_SIZE-1
 				} else {
 					x_minus = x - 1
 				}
@@ -90,7 +91,7 @@ func (f *Forest) UpdateCell(x, y int, next_step *[CA_SIZE][CA_SIZE]int) {
 				}
 
 				if y == 0 {
-					y_minus = CA_SIZE - 1
+					y_minus = CA_SIZE-1
 				} else {
 					y_minus = y - 1
 				}
@@ -129,8 +130,14 @@ func (f *Forest) UpdateCell(x, y int, next_step *[CA_SIZE][CA_SIZE]int) {
 			if f.random_.Intn(1000) == f.lightning_rate_ {
 				next_step[x][y] = FIRE
 			} else {
+				if x == (CA_SIZE-1) {
+					x_plus = 0
+				} else {
+					x_plus = x + 1
+				}
+
 				if x == 0 {
-					x_minus = CA_SIZE - 1
+					x_minus = CA_SIZE-1
 				} else {
 					x_minus = x - 1
 				}
@@ -142,7 +149,7 @@ func (f *Forest) UpdateCell(x, y int, next_step *[CA_SIZE][CA_SIZE]int) {
 				}
 
 				if y == 0 {
-					y_minus = CA_SIZE - 1
+					y_minus = CA_SIZE-1
 				} else {
 					y_minus = y - 1
 				}
@@ -211,10 +218,10 @@ func (f *Forest) WriteForest(w io.Writer) (n int, err error) {
 					b, e = io.WriteString(w, "T")
 					break
 				case f.trees_[x][y] == ALIVE_TWO:
-					b, e = io.WriteString(w, "Y")
+					b, e = io.WriteString(w, "\x1b[32;1mY\x1b[0m")
 					break
 				case f.trees_[x][y] == FIRE:
-					b, e = io.WriteString(w, "F")
+					b, e = io.WriteString(w, "\x1b[31;1mF\x1b[0m")
 					break
 				default:
 					fmt.Println("Unknown state:", f.trees_[x][y])
