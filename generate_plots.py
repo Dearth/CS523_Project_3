@@ -12,6 +12,11 @@ def evaluate(p):
     return random() * 1, random() * 100, random() * 10
 
 
+# Return p_m and the convergence history
+def run_ga():
+    return list(range(0, 100, 1))
+
+
 def new_fig_save(fn, title, xlabel, ylabel):
     def decorator(func):
         @wraps(func)
@@ -36,4 +41,18 @@ def plot1(p_vals):
     plt.plot(biomass, longevity)
 
 
+@new_fig_save(fn="fig2a", title="Biomass based Fitness Convergence", xlabel="Iteration #", ylabel="Fitness")
+def plot2a():
+    history = run_ga()
+    plt.plot(history)
+
+
+@new_fig_save(fn="fig2b", title="Longevity based Fitness Convergence", xlabel="Iteration #", ylabel="Fitness")
+def plot2b():
+    history = run_ga()
+    plt.plot(history)
+
+
 plot1(list(range(0, 10, 1)))
+plot2a()
+plot2b()
