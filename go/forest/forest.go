@@ -418,9 +418,8 @@ func (f *ForestGA) Run(fit, mut, ff int) {
 		}
 	}
 
-	for i := FOREST_SIZE-1 ; i > 20; i-- {
-		fmt.Println(f.forests_[i].fitness_)
-	}
+	fmt.Println(f.forests_[FOREST_SIZE-1].forest_.spawn_rate_one_)
+	fmt.Println(f.forests_[FOREST_SIZE-1].forest_.spawn_rate_two_)
 }
 
 func (f *ForestGA) RunProbTest() {
