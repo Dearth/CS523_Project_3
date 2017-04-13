@@ -218,10 +218,10 @@ func (f *Forest) WriteForest(w io.Writer) (n int, err error) {
 					b, e = io.WriteString(w, "T")
 					break
 				case f.trees_[x][y] == ALIVE_TWO:
-					b, e = io.WriteString(w, "\x1b[32;1mY\x1b[0m")
+					b, e = io.WriteString(w, "Y")
 					break
 				case f.trees_[x][y] == FIRE:
-					b, e = io.WriteString(w, "\x1b[31;1mF\x1b[0m")
+					b, e = io.WriteString(w, "F")
 					break
 				default:
 					fmt.Println("Unknown state:", f.trees_[x][y])
@@ -233,8 +233,8 @@ func (f *Forest) WriteForest(w io.Writer) (n int, err error) {
 				return
 			}
 		}
-		io.WriteString(w, "\n")
 	}
+	io.WriteString(w, "\n")
 	return
 }
 
