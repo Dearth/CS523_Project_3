@@ -48,7 +48,7 @@ class Forest:
         flat[xs] = (flat[xs] & ALIVE) << 1
 
         alive = self.cells == ALIVE
-        self.cells[alive] = ALIVE + (np.random.rand(np.sum(alive)) < 0.01)
+        self.cells[alive] = ALIVE + (np.random.rand(np.sum(alive)) < 0.001)
 
     def is_dead(self):
         return np.sum(self.cells == ALIVE) == 0

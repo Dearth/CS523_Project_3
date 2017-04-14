@@ -69,8 +69,8 @@ def plot3a():
 @new_fig_save(fn="fig3b", title="Two Species Growth Rates", xlabel="Trial #", ylabel="Growth Rate (/ 100)")
 def plot3b():
     biomass = from_group('biomass', base='two_ga', num='two', output='config', average=False)
-
-    plt.plot(biomass[0:50])
+    print("Two species covariance", np.cov(biomass[:,0], biomass[:,1]))
+    plt.plot(biomass)
 
 
 @new_fig_save(fn="fig4a", title="Biomass vs Firefighters", xlabel="Number of Firefighters", ylabel="Fitness")

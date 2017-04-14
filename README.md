@@ -1,4 +1,10 @@
-# CS523_Project_3
+# Dependencies
+The code requires the following python 3 packages: numpy, matplotlib, scipy
+
+# Usage
+To view the simulation animation, `python3 test.py`
+
+# Plot descriptions
 1. Biomass vs longevity
    Over a range of p-values, for a given run, take the average biomass over every step, plotted against the longevity. Expect some maximum in the middle of biomass range.
 
@@ -31,5 +37,3 @@
 # Notes
 Plots 1,2,3 are with a single species
 Plots 1-4 without firefighters
-
-Order of operations?
