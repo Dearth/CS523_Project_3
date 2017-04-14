@@ -2,7 +2,9 @@
 The code requires the following python 3 packages: numpy, matplotlib, scipy
 
 # Usage
-To view the simulation animation, `python3 test.py`
+To view the simulation animation, `python3 test.py`.
+
+To generate the plots used in our paper, run `python3 generate_plots.py`
 
 # Plot descriptions
 1. Biomass vs longevity
