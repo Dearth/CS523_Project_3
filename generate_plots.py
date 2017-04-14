@@ -68,7 +68,7 @@ def plot3a():
 
 @new_fig_save(fn="fig3b", title="Two Species Growth Rates", xlabel="Trial #", ylabel="Growth Rate (/ 100)")
 def plot3b():
-    biomass = np.average(from_group('biomass', base='firefighter_biomass', num='ff'), axis=1)
+    biomass = from_group('biomass', base='two_ga', num='two', output='config', average=False)
 
     plt.plot(biomass[0:50])
 
@@ -82,5 +82,5 @@ def plot4a():
 plot1()
 plot2a()
 plot3a()
-#plot3b()
+plot3b()
 plot4a()
