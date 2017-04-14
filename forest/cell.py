@@ -33,7 +33,7 @@ class Forest:
 
         fig = plt.figure()
         self.image = plt.imshow(self.cells, cmap=cmap, norm=norm, animated=True)
-        animation = FuncAnimation(fig, step_and_redraw, interval=1000, blit=True)
+        animation = FuncAnimation(fig, step_and_redraw, interval=100, blit=True)
         plt.show()
 
     def step(self):
