@@ -1,15 +1,19 @@
 from functools import wraps
 from random import random
+import numpy as np
 
 import matplotlib.pyplot as plt
 
 
+def read_file(file_name):
+    return np.genfromtxt('data/' + file_name, delimiter=',')
+
+
+def read_range(file_name, interval):
+    return np.stack([read_file(file_name + str(i)) for i in interval])
+
 def save(file_name):
     plt.savefig(filename="results/" + file_name, frameon=True, dpi=200)
-
-
-def evaluate(p):
-    return random() * 1, random() * 100, random() * 10
 
 
 # Return p_m and the convergence history
@@ -27,7 +31,8 @@ def new_fig_save(fn, title, xlabel, ylabel):
             plt.ylabel(ylabel)
 
             func(*args, **kwargs)
-
+            plt.ylim(0, 5500)
+            plt.autoscale(enable=True, axis='x', tight=True)
             save(fn)
 
         return wrapper
@@ -37,8 +42,12 @@ def new_fig_save(fn, title, xlabel, ylabel):
 
 @new_fig_save(fn="fig1", title="Biomass vs Longevity", xlabel="Biomass (%)", ylabel="Longevity (steps)")
 def plot1(p_vals):
-    biomass, longevity, fitness = zip(*map(evaluate, p_vals))
-    plt.plot(biomass, longevity)
+    biomass = np.average(read_range('single_ga/biomass/single_biomass_fitness_', range(1, 8)), 0).flat
+    # data/single_ga/longevity/single_longevity_config_8 is empty
+    longevity = np.average(read_range('single_ga/longevity/single_longevity_fitness_', range(1, 8)), 0).flat
+
+    ordered = np.argsort(biomass)
+    plt.plot(biomass[ordered], longevity[ordered])
 
 
 @new_fig_save(fn="fig2a", title="Biomass based Fitness Convergence", xlabel="Iteration #", ylabel="Fitness")
@@ -49,6 +58,12 @@ def plot2a():
 
 @new_fig_save(fn="fig2b", title="Longevity based Fitness Convergence", xlabel="Iteration #", ylabel="Fitness")
 def plot2b():
+    history = run_ga()
+    plt.plot(history)
+
+
+@new_fig_save(fn="fig3a", title="Biomass Fitness Landscape", xlabel="Biomass", ylabel="Fitness")
+def plot2a():
     history = run_ga()
     plt.plot(history)
 
