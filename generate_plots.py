@@ -12,8 +12,9 @@ def read_range(file_name, interval):
     return np.stack([read_file(file_name + str(i)) for i in interval])
 
 
-def from_group(par='biomass', base='single_ga'):
-    return np.average(read_range('{base}/{0}/single_{0}_fitness_'.format(par, base=base), range(1, 8)), 0)
+def from_group(fit_func, base='single_ga', average=True):
+    data = read_range('{base}/{0}/{1}_{0}_fitness_'.format(fit_func, 'single' if base == 'single_ga' else 'two', base=base), range(1, 8))
+    return np.average(data, 0) if average else data
 
 
 def save(file_name):
@@ -61,11 +62,14 @@ def plot2b():
     plt.plot()
 
 
-@new_fig_save(fn="fig3a", title="Biomass Fitness Landscape", xlabel="Biomass", ylabel="Fitness")
+@new_fig_save(fn="fig3a", title="Two Species Evolved Growth Rates", xlabel="Biomass", ylabel="Fitness")
 def plot3a():
+    p_vals = from_group('biomass', base='two_ga', average=False)
+
     plt.plot()
 
 
 plot1()
 plot2a()
-plot2b()
+#plot2b()
+plot3a()
