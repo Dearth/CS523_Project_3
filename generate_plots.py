@@ -31,6 +31,7 @@ def new_fig_save(fn, title, xlabel, ylabel):
             plt.ylabel(ylabel)
 
             func(*args, **kwargs)
+
             plt.ylim(0, 5500)
             plt.autoscale(enable=True, axis='x', tight=True)
             save(fn)
@@ -41,10 +42,11 @@ def new_fig_save(fn, title, xlabel, ylabel):
 
 
 @new_fig_save(fn="fig1", title="Biomass vs Longevity", xlabel="Biomass (%)", ylabel="Longevity (steps)")
-def plot1(p_vals):
-    biomass = np.average(read_range('single_ga/biomass/single_biomass_fitness_', range(1, 8)), 0).flat
+def plot1():
+    readin = lambda par: np.average(read_range('single_ga/{0}/single_{0}_fitness_'.format(par), range(1, 8)), 0).flat
+    biomass = readin('biomass')
+    longevity = readin('longevity')
     # data/single_ga/longevity/single_longevity_config_8 is empty
-    longevity = np.average(read_range('single_ga/longevity/single_longevity_fitness_', range(1, 8)), 0).flat
 
     ordered = np.argsort(biomass)
     plt.plot(biomass[ordered], longevity[ordered])
@@ -68,6 +70,6 @@ def plot2a():
     plt.plot(history)
 
 
-plot1(list(range(0, 10, 1)))
+plot1()
 plot2a()
 plot2b()
